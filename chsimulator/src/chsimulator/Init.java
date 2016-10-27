@@ -4,13 +4,14 @@ public class Init {
 
 	public static int AS;
 	public static int CPS;
+	public static int passes;
 	public static boolean idle;
 	public static boolean active;
 	public static boolean hybrid;
 
 	public static void main(String[] args) {
 
-		Arguments argHandler = new Arguments("a,i,c#,s#", args);
+		Arguments argHandler = new Arguments("a,i,c#,p#", args);
 
 		try {
 			AS = Integer.parseInt(args[0]);
@@ -23,6 +24,12 @@ public class Init {
 			CPS = argHandler.getInt('c');
 		} catch(NullPointerException e) {
 			CPS = 10;
+		}
+
+		try {
+			passes = argHandler.getInt('p');
+		} catch(NullPointerException e) {
+			passes = 1;
 		}
 
 		idle = argHandler.getBool('i');
@@ -46,16 +53,19 @@ public class Init {
 		opt.suggest(AS/5, Transcension.solveChor(AS/5), Transcension.solvePhan(AS/5), AS/5, AS/5);
 		opt.optimize();
 
-		int xyl = (int) Math.round(opt.midresult.Xyl);
-		int chor = (int) Math.round(opt.midresult.Chor);
-		int phan = (int) Math.round(opt.midresult.Phan);
-		int borb = (int) Math.round(opt.midresult.Borb);
-		int pony = (int) Math.round(opt.midresult.Pony);
-		int build = buildCost(xyl, chor, phan, borb, pony);
+		int xyl, chor, phan, borb, pony, build;
+		if(passes >0) do {
+			xyl = (int) Math.round(opt.midresult.Xyl);
+			chor = (int) Math.round(opt.midresult.Chor);
+			phan = (int) Math.round(opt.midresult.Phan);
+			borb = (int) Math.round(opt.midresult.Borb);
+			pony = (int) Math.round(opt.midresult.Pony);
+			build = buildCost(xyl, chor, phan, borb, pony);
 
-		opt = new Optimizer(AS);
-		opt.suggest(xyl, chor, phan, borb, pony);
-		opt.optimize();
+			opt = new Optimizer(AS);
+			opt.suggest(xyl, chor, phan, borb, pony);
+			opt.optimize();
+		} while(AS != build || --passes > 0);
 
 		if(opt.bestresult.Borb >= 1) System.out.println("Hail Borb!");
 	}
