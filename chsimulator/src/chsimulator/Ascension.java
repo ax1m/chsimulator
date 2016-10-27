@@ -61,7 +61,7 @@ public class Ascension {
 	long endoftime = Long.MAX_VALUE;
 	
 	long hze = 0;
-	boolean debug = true;
+	boolean debug = false;
 	
 	ancBonus abonus;
 	
@@ -324,7 +324,7 @@ public class Ascension {
 			}
 			
 			// Long zones debug, every boss zone
-			if (((progress.zone % 5) == 0) && (zonetime > 2000) && debug && !debug) {
+			if (debug && ((progress.zone % 5) == 0) && (zonetime > 2000)) {
 				System.out.println("Zone: " + progress.zone
 						+ ", ttotal=" + progress.time / 1000
 						+ "s, t=" + zonetime

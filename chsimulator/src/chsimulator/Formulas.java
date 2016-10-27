@@ -138,7 +138,7 @@ public class Formulas {
 			
 			// Not every click is critical, increasing average clicks accordingly
 			// 100ms as for 10 clicks per second
-			double timepermob = clicks / asc.luckychance * 100;
+			double timepermob = clicks / asc.luckychance * (1000 / Init.CPS);
 			double totalclicks = clicks / asc.luckychance;
 			
 			// TODO: this probably deserves its own spot in ancBonus

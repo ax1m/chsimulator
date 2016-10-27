@@ -119,11 +119,11 @@ public class Transcension {
 			// Initializing ascension
 			AscSettings set = new AscSettings(currentHS, AS, TP, HSlimit, Xyl, Chor, Phan, Borb, Pony, gilds, 0, currentstat.zone);
 			// If you dont want to use idle/active builds, change to 0 or comment
-			if (currentHS.compareTo(BigDecimal.valueOf(1e7)) > 0) {
+			if (Init.hybrid && currentHS.compareTo(BigDecimal.valueOf(1e7)) > 0) {
 				set.strat = 1;
 			}
-			if (currentHS.compareTo(BigDecimal.valueOf(1e14)) > 0) {
-				//set.strat = 2;
+			if (Init.active && currentHS.compareTo(BigDecimal.valueOf(1e14)) > 0) {
+				set.strat = 2;
 			}
 			Ascension asc = new Ascension(set);
 			

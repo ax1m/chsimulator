@@ -2,7 +2,38 @@ package chsimulator;
 
 public class Init {
 
+	public static int AS;
+	public static int CPS;
+	public static boolean idle;
+	public static boolean active;
+	public static boolean hybrid;
+
 	public static void main(String[] args) {
+
+		Arguments argHandler = new Arguments("a,i,c#,s#", args);
+
+		try {
+			AS = Integer.parseInt(args[0]);
+		} catch(NumberFormatException | IndexOutOfBoundsException e) {
+			System.out.print("Enter amount of AS:\n> ");
+			AS = Integer.parseInt(System.console().readLine());
+		}
+
+		try {
+			CPS = argHandler.getInt('c');
+		} catch(NullPointerException e) {
+			CPS = 10;
+		}
+
+		idle = argHandler.getBool('i');
+		active = argHandler.getBool('a');
+		hybrid = !idle && !active;
+
+		if(idle && active) {
+			System.out.println("Error: Active and Idle flags both set to true.\nPlease try again.");
+			return;
+		}
+
 		// Precalculating static data
 		System.out.println("Calculating tables...");
 		Tables.precalcHeroCost();
@@ -10,41 +41,46 @@ public class Init {
 		Tables.precalcZoneHP();
 		Tables.precalcExpAncients();
 		System.out.println("Tables populated.");
-		
-		// Main optimization loop
-		// Hybrid enabled by default, change in Transcension
-		Suggestion sugg = new Suggestion();
-		for (int i = 80; i < 201; i++) {
-			if (i == 30) { sugg = new Suggestion(25, 0, 0, 0, 75); }
-			if (i == 40) { sugg = new Suggestion(20, 10, 10, 0, 60); }
-			if (i == 60) { sugg = new Suggestion(12, 13, 30, 0, 45); }
-			if (i == 80) { sugg = new Suggestion(5, 10, 55, 0, 30); }
-			if (i == 100) { sugg = new Suggestion(5, 10, 55, 5, 25); }
-			if (i == 120) { sugg = new Suggestion(5, 10, 55, 10, 20); }
-			if (i == 160) { sugg = new Suggestion(5, 10, 50, 15, 20); }
-			if (i == 200) { sugg = new Suggestion(5, 10, 50, 20, 15); }
-			Optimizer opt = new Optimizer(i);
-			opt.suggest(sugg);
-			opt.optimize();
-		}
-		
-		// Single AS optimizing, starts from suggested build
-		//Optimizer opt = new Optimizer(133); opt.optimizeInt(new ASbuild(8, 9, 13, 7, 18));
-		
-		// Another version, starts from rough suggestion, prone to being stuck in local maximums
-		Optimizer opt = new Optimizer(255);
-		opt.suggest(new Suggestion(10,10,30,35,15));
+
+		Optimizer opt = new Optimizer(AS);
+		opt.suggest(AS/5, Transcension.solveChor(AS/5), Transcension.solvePhan(AS/5), AS/5, AS/5);
 		opt.optimize();
-		
-		// Simulating a Transcension with required parameters to check how a single build performs
-		/*Transcension trans = new Transcension(77);
-		trans.Xyl = 5;
-		trans.Chor = 10;
-		trans.Phan = 8;
-		trans.Borb = 0;
-		trans.Pony = 26;
-		
-		trans.simulateTrans();*/
+
+		int xyl = (int) Math.round(opt.midresult.Xyl);
+		int chor = (int) Math.round(opt.midresult.Chor);
+		int phan = (int) Math.round(opt.midresult.Phan);
+		int borb = (int) Math.round(opt.midresult.Borb);
+		int pony = (int) Math.round(opt.midresult.Pony);
+		int build = buildCost(xyl, chor, phan, borb, pony);
+
+		opt = new Optimizer(AS);
+		opt.suggest(xyl, chor, phan, borb, pony);
+		opt.optimize();
+
+		if(opt.bestresult.Borb >= 1) System.out.println("Hail Borb!");
+	}
+
+	public static int chorCost(int lvl) {
+		int res = 0;
+		int i = 1;
+		while(lvl > 10) {
+			res += 10 * i++;
+			lvl -= 10;
+		}
+		res += lvl * i;
+		return res;
+	}
+
+	public static int phanCost(int lvl) {
+		int res = 0;
+		while(lvl > 0) {
+			res += lvl--;
+		}
+		return res;
+	}
+
+	public static int buildCost(int xyl, int chor, int phan, int borb, int pony) {
+		return xyl + chorCost(chor) + phanCost(phan) + borb + pony;
 	}
 
 }
