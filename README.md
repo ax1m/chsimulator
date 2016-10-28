@@ -1,10 +1,21 @@
 # chsimulator
 
-Clicker Heroes simulator, originally intended for personal use and therefore not very user-friendly.
+Forked from bzzzzzu/chsimulator, I added a couple command line options for more user-friendliness.
 
-* Examples of usage in Init.java
-* Idle/hybrid/active switch in Transcension.java
-* Clicks per second change in Formulas.java/getZoneTime
-* Outputs into res.txt by default
+* Main simulation loop in Init.java
+* First argument specifies amount of AS. If not present, user input will be asked
+* By default, a hybrid build is simulated
+
+`-a`
+	Simulates an active build
+
+`-i`
+	Simulated an idle build
+
+`-c N`
+	Sets number of clicks per second to N (defaults to 10)
+
+`-p N`
+	Sets number of simulation passes to N (defaults to 1)
 
 Hail Borb!
